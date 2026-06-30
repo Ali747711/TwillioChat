@@ -92,9 +92,12 @@ export function useRoom() {
 
         const handleDisconnected = () => {
           if (screenTrackRef.current) {
-            screenTrackRef.current.stop()
+            // Null the ref before stop(): stop() fires "ended" synchronously,
+            // and the once-listener's guard must see a null ref to skip.
+            const track = screenTrackRef.current
             screenTrackRef.current = null
             setScreenTrack(null)
+            track.stop()
           }
           connected.removeListener("participantConnected", watchParticipant)
           connected.removeListener(
@@ -143,9 +146,13 @@ export function useRoom() {
   const toggleScreenShare = useCallback(async () => {
     if (!room) return
     if (screenTrackRef.current) {
-      stopScreenShare(room, screenTrackRef.current)
+      // Null the ref before stopping: stopScreenShare() calls track.stop(),
+      // which fires "ended" synchronously; the once-listener's guard must see
+      // a null ref so it doesn't run stopScreenShare a second time.
+      const track = screenTrackRef.current
       screenTrackRef.current = null
       setScreenTrack(null)
+      stopScreenShare(room, track)
       return
     }
     try {
