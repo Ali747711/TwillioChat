@@ -64,6 +64,7 @@ export function useRoom() {
           name: roomName,
           audio: true,
           video: withVideo ? { width: 640 } : false,
+          networkQuality: { local: 1, remote: 1 },
         })
 
         const dataTrack = new LocalDataTrack()
