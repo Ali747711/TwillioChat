@@ -5,7 +5,7 @@ import { createVideoToken } from './twilio'
 
 export function createApp(config: TwilioConfig) {
   const app = express()
-  app.use(cors())
+  app.use(cors({ origin: process.env.CORS_ORIGIN ?? 'http://localhost:5173' }))
   app.use(express.json())
 
   app.post('/api/token', (req, res) => {
