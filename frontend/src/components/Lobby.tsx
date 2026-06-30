@@ -1,8 +1,8 @@
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 interface LobbyProps {
   onJoin: (identity: string, room: string, withVideo: boolean) => void
@@ -11,10 +11,12 @@ interface LobbyProps {
 }
 
 export function Lobby({ onJoin, connecting, error }: LobbyProps) {
-  const [identity, setIdentity] = useState('')
-  const [room, setRoom] = useState('')
+  const [identity, setIdentity] = useState("")
+  const [room, setRoom] = useState(
+    () => new URLSearchParams(window.location.search).get("room") ?? ""
+  )
   const [audioOnly, setAudioOnly] = useState(false)
-  const canJoin = identity.trim() !== '' && room.trim() !== '' && !connecting
+  const canJoin = identity.trim() !== "" && room.trim() !== "" && !connecting
 
   return (
     <div className="flex min-h-svh items-center justify-center p-6">
@@ -54,7 +56,7 @@ export function Lobby({ onJoin, connecting, error }: LobbyProps) {
             disabled={!canJoin}
             onClick={() => onJoin(identity.trim(), room.trim(), !audioOnly)}
           >
-            {connecting ? 'Joining…' : 'Join'}
+            {connecting ? "Joining…" : "Join"}
           </Button>
         </CardContent>
       </Card>

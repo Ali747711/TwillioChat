@@ -22,6 +22,11 @@ export function App() {
 
   const handleJoin = (name: string, roomName: string, withVideo: boolean) => {
     setIdentity(name)
+    window.history.replaceState(
+      null,
+      "",
+      `?room=${encodeURIComponent(roomName)}`
+    )
     join(name, roomName, withVideo)
   }
 
