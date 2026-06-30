@@ -1,5 +1,9 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
+import { MicOff, VideoOff } from "lucide-react"
 import type { RemoteParticipant, RemoteTrack } from "twilio-video"
+import { useNetworkLevel } from "@/hooks/useNetworkLevel"
+import { useRemoteMediaState } from "@/hooks/useRemoteMediaState"
+import { NetworkBars } from "./NetworkBars"
 
 interface ParticipantProps {
   participant: RemoteParticipant
@@ -8,19 +12,18 @@ interface ParticipantProps {
 export function Participant({ participant }: ParticipantProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const audioRef = useRef<HTMLAudioElement>(null)
-  const [hasVideo, setHasVideo] = useState(false)
+  const networkLevel = useNetworkLevel(participant)
+  const { audioEnabled, videoEnabled } = useRemoteMediaState(participant)
 
   useEffect(() => {
     const attach = (track: RemoteTrack) => {
       if (track.kind === "video" && videoRef.current) {
         track.attach(videoRef.current)
-        setHasVideo(true)
       } else if (track.kind === "audio" && audioRef.current) {
         track.attach(audioRef.current)
       }
     }
     const detach = (track: RemoteTrack) => {
-      if (track.kind === "video") setHasVideo(false)
       if (track.kind === "video" || track.kind === "audio") {
         track.detach().forEach((el) => el.remove())
       }
@@ -46,14 +49,19 @@ export function Participant({ participant }: ParticipantProps) {
         className="h-full w-full object-cover"
       />
       <audio ref={audioRef} autoPlay />
-      {!hasVideo && (
+      {!videoEnabled && (
         <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
           {participant.identity}
         </div>
       )}
-      <span className="absolute bottom-1 left-1 rounded bg-black/50 px-1.5 py-0.5 text-xs text-white">
+      <span className="absolute bottom-1 left-1 flex items-center gap-1 rounded bg-black/50 px-1.5 py-0.5 text-xs text-white">
+        {!audioEnabled && <MicOff className="h-3 w-3" />}
         {participant.identity}
       </span>
+      <div className="absolute top-1 right-1 flex items-center gap-1 rounded bg-black/50 px-1 py-0.5">
+        {!videoEnabled && <VideoOff className="h-3 w-3 text-white" />}
+        <NetworkBars level={networkLevel} />
+      </div>
     </div>
   )
 }
