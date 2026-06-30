@@ -4,7 +4,7 @@ import type {
   RemoteParticipant,
   Room as TwilioRoom,
 } from "twilio-video"
-import type { ChatMessage } from "@/hooks/useRoom"
+import type { ChatMessage, ConnectionState } from "@/hooks/useRoom"
 import { ChatPanel } from "./ChatPanel"
 import { ControlBar } from "./ControlBar"
 import { ParticipantGrid } from "./ParticipantGrid"
@@ -16,6 +16,7 @@ interface RoomProps {
   messages: ChatMessage[]
   screenTrack: LocalVideoTrack | null
   dominantSpeakerSid: string | null
+  connectionState: ConnectionState
   onSend: (text: string) => void
   onToggleShare: () => void
   onLeave: () => void
@@ -28,6 +29,7 @@ export function Room({
   messages,
   screenTrack,
   dominantSpeakerSid,
+  connectionState,
   onSend,
   onToggleShare,
   onLeave,
@@ -36,6 +38,11 @@ export function Room({
 
   return (
     <div className="flex h-svh flex-col">
+      {connectionState === "reconnecting" && (
+        <div className="bg-yellow-500/90 py-1 text-center text-sm text-black">
+          Reconnecting…
+        </div>
+      )}
       <div className="flex flex-1 overflow-hidden">
         <div className="flex-1 overflow-auto p-4">
           <ParticipantGrid

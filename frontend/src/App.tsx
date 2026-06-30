@@ -16,6 +16,7 @@ export function App() {
     screenTrack,
     toggleScreenShare,
     dominantSpeakerSid,
+    connectionState,
   } = useRoom()
   const [identity, setIdentity] = useState("")
 
@@ -33,6 +34,7 @@ export function App() {
         messages={messages}
         screenTrack={screenTrack}
         dominantSpeakerSid={dominantSpeakerSid}
+        connectionState={connectionState}
         onSend={(text) => sendMessage(text, identity)}
         onToggleShare={toggleScreenShare}
         onLeave={leave}

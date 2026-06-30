@@ -19,6 +19,8 @@ export interface ChatMessage {
 
 export type RoomStatus = "idle" | "connecting" | "connected" | "error"
 
+export type ConnectionState = "connected" | "reconnecting"
+
 export function useRoom() {
   const [room, setRoom] = useState<Room | null>(null)
   const [participants, dispatch] = useReducer(participantsReducer, [])
@@ -32,6 +34,8 @@ export function useRoom() {
   const teardownsRef = useRef<Array<() => void>>([])
   const screenTrackRef = useRef<LocalVideoTrack | null>(null)
   const [screenTrack, setScreenTrack] = useState<LocalVideoTrack | null>(null)
+  const [connectionState, setConnectionState] =
+    useState<ConnectionState>("connected")
 
   const addMessage = useCallback((from: string, text: string) => {
     setMessages((prev) => [...prev, { from, text, at: Date.now() }])
@@ -80,6 +84,9 @@ export function useRoom() {
         const handleParticipantLeft = (p: RemoteParticipant) =>
           dispatch({ type: "remove", participant: p })
 
+        const handleReconnecting = () => setConnectionState("reconnecting")
+        const handleReconnected = () => setConnectionState("connected")
+
         const handleDominantSpeaker = (participant: RemoteParticipant | null) =>
           setDominantSpeakerSid(participant?.sid ?? null)
 
@@ -99,6 +106,9 @@ export function useRoom() {
             "dominantSpeakerChanged",
             handleDominantSpeaker
           )
+          connected.removeListener("reconnecting", handleReconnecting)
+          connected.removeListener("reconnected", handleReconnected)
+          setConnectionState("connected")
           setDominantSpeakerSid(null)
           teardownsRef.current.forEach((fn) => fn())
           teardownsRef.current = []
@@ -113,6 +123,8 @@ export function useRoom() {
         connected.on("participantDisconnected", handleParticipantLeft)
         connected.on("disconnected", handleDisconnected)
         connected.on("dominantSpeakerChanged", handleDominantSpeaker)
+        connected.on("reconnecting", handleReconnecting)
+        connected.on("reconnected", handleReconnected)
 
         setRoom(connected)
         setStatus("connected")
@@ -176,5 +188,6 @@ export function useRoom() {
     screenTrack,
     toggleScreenShare,
     dominantSpeakerSid,
+    connectionState,
   }
 }
