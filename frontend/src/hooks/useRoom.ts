@@ -44,7 +44,7 @@ export function useRoom() {
       })
       participant.on("trackSubscribed", listenForData)
       teardownsRef.current.push(() =>
-        participant.off("trackSubscribed", listenForData)
+        participant.removeListener("trackSubscribed", listenForData)
       )
     },
     [addMessage]
@@ -72,9 +72,12 @@ export function useRoom() {
           dispatch({ type: "remove", participant: p })
 
         const handleDisconnected = () => {
-          connected.off("participantConnected", watchParticipant)
-          connected.off("participantDisconnected", handleParticipantLeft)
-          connected.off("disconnected", handleDisconnected)
+          connected.removeListener("participantConnected", watchParticipant)
+          connected.removeListener(
+            "participantDisconnected",
+            handleParticipantLeft
+          )
+          connected.removeListener("disconnected", handleDisconnected)
           teardownsRef.current.forEach((fn) => fn())
           teardownsRef.current = []
           dispatch({ type: "clear" })
