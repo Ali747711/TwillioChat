@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState } from "react"
 import {
   MessageSquare,
   Mic,
@@ -7,15 +7,15 @@ import {
   PhoneOff,
   Video as VideoIcon,
   VideoOff,
-} from 'lucide-react'
-import type { LocalVideoTrack, Room } from 'twilio-video'
-import { Button } from '@/components/ui/button'
+} from "lucide-react"
+import type { LocalVideoTrack, Room } from "twilio-video"
+import { Button } from "@/components/ui/button"
 import {
   setAudioEnabled,
   setVideoEnabled,
   startScreenShare,
   stopScreenShare,
-} from '@/lib/localMedia'
+} from "@/lib/localMedia"
 
 interface ControlBarProps {
   room: Room
@@ -24,7 +24,12 @@ interface ControlBarProps {
   onLeave: () => void
 }
 
-export function ControlBar({ room, chatOpen, onToggleChat, onLeave }: ControlBarProps) {
+export function ControlBar({
+  room,
+  chatOpen,
+  onToggleChat,
+  onLeave,
+}: ControlBarProps) {
   const [micOn, setMicOn] = useState(true)
   const [camOn, setCamOn] = useState(true)
   const [sharing, setSharing] = useState(false)
@@ -50,8 +55,20 @@ export function ControlBar({ room, chatOpen, onToggleChat, onLeave }: ControlBar
       return
     }
     try {
-      screenTrackRef.current = await startScreenShare(room)
+      const track = await startScreenShare(room)
+      screenTrackRef.current = track
       setSharing(true)
+      track.mediaStreamTrack.addEventListener(
+        "ended",
+        () => {
+          if (screenTrackRef.current) {
+            stopScreenShare(room, screenTrackRef.current)
+            screenTrackRef.current = null
+            setSharing(false)
+          }
+        },
+        { once: true }
+      )
     } catch {
       // User dismissed the screen-picker; leave state unchanged.
     }
@@ -59,16 +76,32 @@ export function ControlBar({ room, chatOpen, onToggleChat, onLeave }: ControlBar
 
   return (
     <div className="flex items-center justify-center gap-2 border-t bg-background p-3">
-      <Button variant={micOn ? 'secondary' : 'destructive'} size="icon" onClick={toggleMic}>
+      <Button
+        variant={micOn ? "secondary" : "destructive"}
+        size="icon"
+        onClick={toggleMic}
+      >
         {micOn ? <Mic /> : <MicOff />}
       </Button>
-      <Button variant={camOn ? 'secondary' : 'destructive'} size="icon" onClick={toggleCam}>
+      <Button
+        variant={camOn ? "secondary" : "destructive"}
+        size="icon"
+        onClick={toggleCam}
+      >
         {camOn ? <VideoIcon /> : <VideoOff />}
       </Button>
-      <Button variant={sharing ? 'default' : 'secondary'} size="icon" onClick={toggleShare}>
+      <Button
+        variant={sharing ? "default" : "secondary"}
+        size="icon"
+        onClick={toggleShare}
+      >
         <MonitorUp />
       </Button>
-      <Button variant={chatOpen ? 'default' : 'secondary'} size="icon" onClick={onToggleChat}>
+      <Button
+        variant={chatOpen ? "default" : "secondary"}
+        size="icon"
+        onClick={onToggleChat}
+      >
         <MessageSquare />
       </Button>
       <Button variant="destructive" size="icon" onClick={onLeave}>
