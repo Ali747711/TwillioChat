@@ -1,31 +1,59 @@
-import { useState } from 'react'
-import { Lobby } from '@/components/Lobby'
-import { Room } from '@/components/Room'
-import { useRoom } from '@/hooks/useRoom'
+import { useState } from "react"
+import { Lobby } from "@/components/Lobby"
+import { Room } from "@/components/Room"
+import { useRoom } from "@/hooks/useRoom"
 
 export function App() {
-  const { room, participants, messages, status, error, join, leave, sendMessage } = useRoom()
-  const [identity, setIdentity] = useState('')
+  const {
+    room,
+    participants,
+    messages,
+    status,
+    error,
+    join,
+    leave,
+    sendMessage,
+    screenTrack,
+    toggleScreenShare,
+    dominantSpeakerSid,
+    connectionState,
+  } = useRoom()
+  const [identity, setIdentity] = useState("")
 
   const handleJoin = (name: string, roomName: string, withVideo: boolean) => {
     setIdentity(name)
+    window.history.replaceState(
+      null,
+      "",
+      `?room=${encodeURIComponent(roomName)}`
+    )
     join(name, roomName, withVideo)
   }
 
-  if (room && status === 'connected') {
+  if (room && status === "connected") {
     return (
       <Room
         room={room}
         identity={identity}
         participants={participants}
         messages={messages}
+        screenTrack={screenTrack}
+        dominantSpeakerSid={dominantSpeakerSid}
+        connectionState={connectionState}
         onSend={(text) => sendMessage(text, identity)}
+        onToggleShare={toggleScreenShare}
         onLeave={leave}
       />
     )
   }
 
-  return <Lobby onJoin={handleJoin} connecting={status === 'connecting'} error={error} />
+  return (
+    <Lobby
+      onJoin={handleJoin}
+      connecting={status === "connecting"}
+      error={error}
+    />
+  )
 }
 
 export default App

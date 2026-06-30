@@ -2,11 +2,13 @@ import { useCallback, useReducer, useRef, useState } from "react"
 import {
   connect,
   LocalDataTrack,
+  type LocalVideoTrack,
   type RemoteParticipant,
   type RemoteTrack,
   type Room,
 } from "twilio-video"
 import { fetchToken } from "@/lib/twilioClient"
+import { startScreenShare, stopScreenShare } from "@/lib/localMedia"
 import { participantsReducer } from "./participants"
 
 export interface ChatMessage {
@@ -17,14 +19,23 @@ export interface ChatMessage {
 
 export type RoomStatus = "idle" | "connecting" | "connected" | "error"
 
+export type ConnectionState = "connected" | "reconnecting"
+
 export function useRoom() {
   const [room, setRoom] = useState<Room | null>(null)
   const [participants, dispatch] = useReducer(participantsReducer, [])
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [status, setStatus] = useState<RoomStatus>("idle")
   const [error, setError] = useState<string | null>(null)
+  const [dominantSpeakerSid, setDominantSpeakerSid] = useState<string | null>(
+    null
+  )
   const dataTrackRef = useRef<LocalDataTrack | null>(null)
   const teardownsRef = useRef<Array<() => void>>([])
+  const screenTrackRef = useRef<LocalVideoTrack | null>(null)
+  const [screenTrack, setScreenTrack] = useState<LocalVideoTrack | null>(null)
+  const [connectionState, setConnectionState] =
+    useState<ConnectionState>("connected")
 
   const addMessage = useCallback((from: string, text: string) => {
     setMessages((prev) => [...prev, { from, text, at: Date.now() }])
@@ -60,6 +71,8 @@ export function useRoom() {
           name: roomName,
           audio: true,
           video: withVideo ? { width: 640 } : false,
+          networkQuality: { local: 1, remote: 1 },
+          dominantSpeaker: true,
         })
 
         const dataTrack = new LocalDataTrack()
@@ -71,13 +84,35 @@ export function useRoom() {
         const handleParticipantLeft = (p: RemoteParticipant) =>
           dispatch({ type: "remove", participant: p })
 
+        const handleReconnecting = () => setConnectionState("reconnecting")
+        const handleReconnected = () => setConnectionState("connected")
+
+        const handleDominantSpeaker = (participant: RemoteParticipant | null) =>
+          setDominantSpeakerSid(participant?.sid ?? null)
+
         const handleDisconnected = () => {
+          if (screenTrackRef.current) {
+            // Null the ref before stop(): stop() fires "ended" synchronously,
+            // and the once-listener's guard must see a null ref to skip.
+            const track = screenTrackRef.current
+            screenTrackRef.current = null
+            setScreenTrack(null)
+            track.stop()
+          }
           connected.removeListener("participantConnected", watchParticipant)
           connected.removeListener(
             "participantDisconnected",
             handleParticipantLeft
           )
           connected.removeListener("disconnected", handleDisconnected)
+          connected.removeListener(
+            "dominantSpeakerChanged",
+            handleDominantSpeaker
+          )
+          connected.removeListener("reconnecting", handleReconnecting)
+          connected.removeListener("reconnected", handleReconnected)
+          setConnectionState("connected")
+          setDominantSpeakerSid(null)
           teardownsRef.current.forEach((fn) => fn())
           teardownsRef.current = []
           dispatch({ type: "clear" })
@@ -90,6 +125,9 @@ export function useRoom() {
         connected.on("participantConnected", watchParticipant)
         connected.on("participantDisconnected", handleParticipantLeft)
         connected.on("disconnected", handleDisconnected)
+        connected.on("dominantSpeakerChanged", handleDominantSpeaker)
+        connected.on("reconnecting", handleReconnecting)
+        connected.on("reconnected", handleReconnected)
 
         setRoom(connected)
         setStatus("connected")
@@ -103,6 +141,38 @@ export function useRoom() {
 
   const leave = useCallback(() => {
     room?.disconnect()
+  }, [room])
+
+  const toggleScreenShare = useCallback(async () => {
+    if (!room) return
+    if (screenTrackRef.current) {
+      // Null the ref before stopping: stopScreenShare() calls track.stop(),
+      // which fires "ended" synchronously; the once-listener's guard must see
+      // a null ref so it doesn't run stopScreenShare a second time.
+      const track = screenTrackRef.current
+      screenTrackRef.current = null
+      setScreenTrack(null)
+      stopScreenShare(room, track)
+      return
+    }
+    try {
+      const track = await startScreenShare(room)
+      screenTrackRef.current = track
+      setScreenTrack(track)
+      track.mediaStreamTrack.addEventListener(
+        "ended",
+        () => {
+          if (screenTrackRef.current) {
+            stopScreenShare(room, screenTrackRef.current)
+            screenTrackRef.current = null
+            setScreenTrack(null)
+          }
+        },
+        { once: true }
+      )
+    } catch {
+      // User dismissed the screen picker; leave state unchanged.
+    }
   }, [room])
 
   const sendMessage = useCallback(
@@ -122,5 +192,9 @@ export function useRoom() {
     join,
     leave,
     sendMessage,
+    screenTrack,
+    toggleScreenShare,
+    dominantSpeakerSid,
+    connectionState,
   }
 }
