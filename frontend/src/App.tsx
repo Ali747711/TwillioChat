@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { Lobby } from '@/components/Lobby'
+import { Room } from '@/components/Room'
 import { useRoom } from '@/hooks/useRoom'
 
 export function App() {
-  const { status, error, join } = useRoom()
+  const { room, participants, messages, status, error, join, leave, sendMessage } = useRoom()
   const [identity, setIdentity] = useState('')
 
   const handleJoin = (name: string, roomName: string, withVideo: boolean) => {
@@ -11,9 +12,17 @@ export function App() {
     join(name, roomName, withVideo)
   }
 
-  // Temporary: log who is joining until the Room screen exists (Task 13).
-  if (status === 'connected') {
-    return <div className="p-6">Connected as {identity}. Room UI arrives in Task 13.</div>
+  if (room && status === 'connected') {
+    return (
+      <Room
+        room={room}
+        identity={identity}
+        participants={participants}
+        messages={messages}
+        onSend={(text) => sendMessage(text, identity)}
+        onLeave={leave}
+      />
+    )
   }
 
   return <Lobby onJoin={handleJoin} connecting={status === 'connecting'} error={error} />
