@@ -7,9 +7,10 @@ import { NetworkBars } from "./NetworkBars"
 
 interface ParticipantProps {
   participant: RemoteParticipant
+  isDominant: boolean
 }
 
-export function Participant({ participant }: ParticipantProps) {
+export function Participant({ participant, isDominant }: ParticipantProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const audioRef = useRef<HTMLAudioElement>(null)
   const networkLevel = useNetworkLevel(participant)
@@ -41,7 +42,11 @@ export function Participant({ participant }: ParticipantProps) {
   }, [participant])
 
   return (
-    <div className="relative aspect-video overflow-hidden rounded-lg bg-muted">
+    <div
+      className={`relative aspect-video overflow-hidden rounded-lg bg-muted ${
+        isDominant ? "ring-2 ring-green-400" : ""
+      }`}
+    >
       <video
         ref={videoRef}
         autoPlay

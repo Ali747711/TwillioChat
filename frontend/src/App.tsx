@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { Lobby } from '@/components/Lobby'
-import { Room } from '@/components/Room'
-import { useRoom } from '@/hooks/useRoom'
+import { useState } from "react"
+import { Lobby } from "@/components/Lobby"
+import { Room } from "@/components/Room"
+import { useRoom } from "@/hooks/useRoom"
 
 export function App() {
   const {
@@ -15,15 +15,16 @@ export function App() {
     sendMessage,
     screenTrack,
     toggleScreenShare,
+    dominantSpeakerSid,
   } = useRoom()
-  const [identity, setIdentity] = useState('')
+  const [identity, setIdentity] = useState("")
 
   const handleJoin = (name: string, roomName: string, withVideo: boolean) => {
     setIdentity(name)
     join(name, roomName, withVideo)
   }
 
-  if (room && status === 'connected') {
+  if (room && status === "connected") {
     return (
       <Room
         room={room}
@@ -31,6 +32,7 @@ export function App() {
         participants={participants}
         messages={messages}
         screenTrack={screenTrack}
+        dominantSpeakerSid={dominantSpeakerSid}
         onSend={(text) => sendMessage(text, identity)}
         onToggleShare={toggleScreenShare}
         onLeave={leave}
@@ -38,7 +40,13 @@ export function App() {
     )
   }
 
-  return <Lobby onJoin={handleJoin} connecting={status === 'connecting'} error={error} />
+  return (
+    <Lobby
+      onJoin={handleJoin}
+      connecting={status === "connecting"}
+      error={error}
+    />
+  )
 }
 
 export default App

@@ -25,6 +25,9 @@ export function useRoom() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [status, setStatus] = useState<RoomStatus>("idle")
   const [error, setError] = useState<string | null>(null)
+  const [dominantSpeakerSid, setDominantSpeakerSid] = useState<string | null>(
+    null
+  )
   const dataTrackRef = useRef<LocalDataTrack | null>(null)
   const teardownsRef = useRef<Array<() => void>>([])
   const screenTrackRef = useRef<LocalVideoTrack | null>(null)
@@ -65,6 +68,7 @@ export function useRoom() {
           audio: true,
           video: withVideo ? { width: 640 } : false,
           networkQuality: { local: 1, remote: 1 },
+          dominantSpeaker: true,
         })
 
         const dataTrack = new LocalDataTrack()
@@ -75,6 +79,9 @@ export function useRoom() {
 
         const handleParticipantLeft = (p: RemoteParticipant) =>
           dispatch({ type: "remove", participant: p })
+
+        const handleDominantSpeaker = (participant: RemoteParticipant | null) =>
+          setDominantSpeakerSid(participant?.sid ?? null)
 
         const handleDisconnected = () => {
           if (screenTrackRef.current) {
@@ -88,6 +95,11 @@ export function useRoom() {
             handleParticipantLeft
           )
           connected.removeListener("disconnected", handleDisconnected)
+          connected.removeListener(
+            "dominantSpeakerChanged",
+            handleDominantSpeaker
+          )
+          setDominantSpeakerSid(null)
           teardownsRef.current.forEach((fn) => fn())
           teardownsRef.current = []
           dispatch({ type: "clear" })
@@ -100,6 +112,7 @@ export function useRoom() {
         connected.on("participantConnected", watchParticipant)
         connected.on("participantDisconnected", handleParticipantLeft)
         connected.on("disconnected", handleDisconnected)
+        connected.on("dominantSpeakerChanged", handleDominantSpeaker)
 
         setRoom(connected)
         setStatus("connected")
@@ -162,5 +175,6 @@ export function useRoom() {
     sendMessage,
     screenTrack,
     toggleScreenShare,
+    dominantSpeakerSid,
   }
 }

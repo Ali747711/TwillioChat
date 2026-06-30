@@ -1,9 +1,13 @@
-import { useState } from 'react'
-import type { LocalVideoTrack, RemoteParticipant, Room as TwilioRoom } from 'twilio-video'
-import type { ChatMessage } from '@/hooks/useRoom'
-import { ChatPanel } from './ChatPanel'
-import { ControlBar } from './ControlBar'
-import { ParticipantGrid } from './ParticipantGrid'
+import { useState } from "react"
+import type {
+  LocalVideoTrack,
+  RemoteParticipant,
+  Room as TwilioRoom,
+} from "twilio-video"
+import type { ChatMessage } from "@/hooks/useRoom"
+import { ChatPanel } from "./ChatPanel"
+import { ControlBar } from "./ControlBar"
+import { ParticipantGrid } from "./ParticipantGrid"
 
 interface RoomProps {
   room: TwilioRoom
@@ -11,6 +15,7 @@ interface RoomProps {
   participants: RemoteParticipant[]
   messages: ChatMessage[]
   screenTrack: LocalVideoTrack | null
+  dominantSpeakerSid: string | null
   onSend: (text: string) => void
   onToggleShare: () => void
   onLeave: () => void
@@ -22,6 +27,7 @@ export function Room({
   participants,
   messages,
   screenTrack,
+  dominantSpeakerSid,
   onSend,
   onToggleShare,
   onLeave,
@@ -37,11 +43,16 @@ export function Room({
             identity={identity}
             participants={participants}
             screenTrack={screenTrack}
+            dominantSpeakerSid={dominantSpeakerSid}
           />
         </div>
         {chatOpen && (
           <aside className="w-80 border-l">
-            <ChatPanel messages={messages} identity={identity} onSend={onSend} />
+            <ChatPanel
+              messages={messages}
+              identity={identity}
+              onSend={onSend}
+            />
           </aside>
         )}
       </div>
