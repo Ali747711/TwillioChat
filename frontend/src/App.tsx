@@ -4,7 +4,18 @@ import { Room } from '@/components/Room'
 import { useRoom } from '@/hooks/useRoom'
 
 export function App() {
-  const { room, participants, messages, status, error, join, leave, sendMessage } = useRoom()
+  const {
+    room,
+    participants,
+    messages,
+    status,
+    error,
+    join,
+    leave,
+    sendMessage,
+    screenTrack,
+    toggleScreenShare,
+  } = useRoom()
   const [identity, setIdentity] = useState('')
 
   const handleJoin = (name: string, roomName: string, withVideo: boolean) => {
@@ -19,7 +30,9 @@ export function App() {
         identity={identity}
         participants={participants}
         messages={messages}
+        screenTrack={screenTrack}
         onSend={(text) => sendMessage(text, identity)}
+        onToggleShare={toggleScreenShare}
         onLeave={leave}
       />
     )

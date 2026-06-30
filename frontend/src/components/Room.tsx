@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { RemoteParticipant, Room as TwilioRoom } from 'twilio-video'
+import type { LocalVideoTrack, RemoteParticipant, Room as TwilioRoom } from 'twilio-video'
 import type { ChatMessage } from '@/hooks/useRoom'
 import { ChatPanel } from './ChatPanel'
 import { ControlBar } from './ControlBar'
@@ -10,18 +10,34 @@ interface RoomProps {
   identity: string
   participants: RemoteParticipant[]
   messages: ChatMessage[]
+  screenTrack: LocalVideoTrack | null
   onSend: (text: string) => void
+  onToggleShare: () => void
   onLeave: () => void
 }
 
-export function Room({ room, identity, participants, messages, onSend, onLeave }: RoomProps) {
+export function Room({
+  room,
+  identity,
+  participants,
+  messages,
+  screenTrack,
+  onSend,
+  onToggleShare,
+  onLeave,
+}: RoomProps) {
   const [chatOpen, setChatOpen] = useState(false)
 
   return (
     <div className="flex h-svh flex-col">
       <div className="flex flex-1 overflow-hidden">
         <div className="flex-1 overflow-auto p-4">
-          <ParticipantGrid room={room} identity={identity} participants={participants} />
+          <ParticipantGrid
+            room={room}
+            identity={identity}
+            participants={participants}
+            screenTrack={screenTrack}
+          />
         </div>
         {chatOpen && (
           <aside className="w-80 border-l">
@@ -32,7 +48,9 @@ export function Room({ room, identity, participants, messages, onSend, onLeave }
       <ControlBar
         room={room}
         chatOpen={chatOpen}
+        sharing={screenTrack !== null}
         onToggleChat={() => setChatOpen((open) => !open)}
+        onToggleShare={onToggleShare}
         onLeave={onLeave}
       />
     </div>

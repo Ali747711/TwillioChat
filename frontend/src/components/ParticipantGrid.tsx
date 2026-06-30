@@ -1,5 +1,6 @@
-import type { RemoteParticipant, Room } from 'twilio-video'
+import type { LocalVideoTrack, RemoteParticipant, Room } from 'twilio-video'
 import { gridColsForCount } from '@/lib/grid'
+import { LocalScreen } from './LocalScreen'
 import { LocalVideo } from './LocalVideo'
 import { Participant } from './Participant'
 
@@ -7,10 +8,16 @@ interface ParticipantGridProps {
   room: Room
   identity: string
   participants: RemoteParticipant[]
+  screenTrack: LocalVideoTrack | null
 }
 
-export function ParticipantGrid({ room, identity, participants }: ParticipantGridProps) {
-  const tileCount = 1 + participants.length
+export function ParticipantGrid({
+  room,
+  identity,
+  participants,
+  screenTrack,
+}: ParticipantGridProps) {
+  const tileCount = 1 + (screenTrack ? 1 : 0) + participants.length
   const cols = gridColsForCount(tileCount)
   return (
     <div
@@ -18,6 +25,7 @@ export function ParticipantGrid({ room, identity, participants }: ParticipantGri
       style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
     >
       <LocalVideo room={room} identity={identity} />
+      {screenTrack && <LocalScreen track={screenTrack} />}
       {participants.map((p) => (
         <Participant key={p.sid} participant={p} />
       ))}

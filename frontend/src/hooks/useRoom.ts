@@ -2,11 +2,13 @@ import { useCallback, useReducer, useRef, useState } from "react"
 import {
   connect,
   LocalDataTrack,
+  type LocalVideoTrack,
   type RemoteParticipant,
   type RemoteTrack,
   type Room,
 } from "twilio-video"
 import { fetchToken } from "@/lib/twilioClient"
+import { startScreenShare, stopScreenShare } from "@/lib/localMedia"
 import { participantsReducer } from "./participants"
 
 export interface ChatMessage {
@@ -25,6 +27,8 @@ export function useRoom() {
   const [error, setError] = useState<string | null>(null)
   const dataTrackRef = useRef<LocalDataTrack | null>(null)
   const teardownsRef = useRef<Array<() => void>>([])
+  const screenTrackRef = useRef<LocalVideoTrack | null>(null)
+  const [screenTrack, setScreenTrack] = useState<LocalVideoTrack | null>(null)
 
   const addMessage = useCallback((from: string, text: string) => {
     setMessages((prev) => [...prev, { from, text, at: Date.now() }])
@@ -72,6 +76,11 @@ export function useRoom() {
           dispatch({ type: "remove", participant: p })
 
         const handleDisconnected = () => {
+          if (screenTrackRef.current) {
+            screenTrackRef.current.stop()
+            screenTrackRef.current = null
+            setScreenTrack(null)
+          }
           connected.removeListener("participantConnected", watchParticipant)
           connected.removeListener(
             "participantDisconnected",
@@ -105,6 +114,34 @@ export function useRoom() {
     room?.disconnect()
   }, [room])
 
+  const toggleScreenShare = useCallback(async () => {
+    if (!room) return
+    if (screenTrackRef.current) {
+      stopScreenShare(room, screenTrackRef.current)
+      screenTrackRef.current = null
+      setScreenTrack(null)
+      return
+    }
+    try {
+      const track = await startScreenShare(room)
+      screenTrackRef.current = track
+      setScreenTrack(track)
+      track.mediaStreamTrack.addEventListener(
+        "ended",
+        () => {
+          if (screenTrackRef.current) {
+            stopScreenShare(room, screenTrackRef.current)
+            screenTrackRef.current = null
+            setScreenTrack(null)
+          }
+        },
+        { once: true }
+      )
+    } catch {
+      // User dismissed the screen picker; leave state unchanged.
+    }
+  }, [room])
+
   const sendMessage = useCallback(
     (text: string, from: string) => {
       dataTrackRef.current?.send(text)
@@ -122,5 +159,7 @@ export function useRoom() {
     join,
     leave,
     sendMessage,
+    screenTrack,
+    toggleScreenShare,
   }
 }
