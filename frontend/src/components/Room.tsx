@@ -1,12 +1,12 @@
 import { useState } from "react"
+import { Link as LinkIcon } from "lucide-react"
 import type {
   LocalVideoTrack,
   RemoteParticipant,
   Room as TwilioRoom,
 } from "twilio-video"
-import { Link as LinkIcon } from "lucide-react"
 import type { ChatMessage, ConnectionState } from "@/hooks/useRoom"
-import { Button } from "@/components/ui/button"
+import { StudioButton } from "./studio/StudioButton"
 import { ChatPanel } from "./ChatPanel"
 import { ControlBar } from "./ControlBar"
 import { ParticipantGrid } from "./ParticipantGrid"
@@ -38,6 +38,7 @@ export function Room({
 }: RoomProps) {
   const [chatOpen, setChatOpen] = useState(false)
   const [copied, setCopied] = useState(false)
+
   const copyLink = async () => {
     const link = `${location.origin}${location.pathname}?room=${encodeURIComponent(room.name)}`
     try {
@@ -50,24 +51,28 @@ export function Room({
   }
 
   return (
-    <div className="flex h-svh flex-col">
-      <header className="flex items-center justify-between border-b px-4 py-2">
-        <div className="text-sm">
-          <span className="font-medium">{room.name}</span>
-          <span className="ml-2 text-muted-foreground">
-            {participants.length + 1} in call
-          </span>
-        </div>
-        <Button variant="secondary" size="sm" onClick={copyLink}>
-          <LinkIcon className="mr-1 h-4 w-4" />
-          {copied ? "Copied!" : "Copy link"}
-        </Button>
-      </header>
+    <div className="flex h-svh flex-col bg-studio-bg text-white">
       {connectionState === "reconnecting" && (
-        <div className="bg-yellow-500/90 py-1 text-center text-sm text-black">
+        <div className="bg-studio-orange py-1 text-center text-[11px] font-semibold uppercase tracking-[0.15em] text-black">
           Reconnecting…
         </div>
       )}
+      <header className="flex items-center justify-between border-b border-studio-border px-4 py-3">
+        <div className="flex items-baseline gap-3">
+          <span className="text-sm font-bold uppercase tracking-[-0.02em]">
+            {room.name}
+          </span>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-studio-muted">
+            {participants.length + 1} in call
+          </span>
+        </div>
+        <StudioButton className="px-3 py-2" onClick={copyLink}>
+          <span className="flex items-center gap-1">
+            <LinkIcon className="h-3 w-3" />
+            {copied ? "Copied!" : "Copy link"}
+          </span>
+        </StudioButton>
+      </header>
       <div className="flex flex-1 overflow-hidden">
         <div className="flex-1 overflow-auto p-4">
           <ParticipantGrid
@@ -79,12 +84,8 @@ export function Room({
           />
         </div>
         {chatOpen && (
-          <aside className="w-80 border-l">
-            <ChatPanel
-              messages={messages}
-              identity={identity}
-              onSend={onSend}
-            />
+          <aside className="w-80 border-l border-studio-border">
+            <ChatPanel messages={messages} identity={identity} onSend={onSend} />
           </aside>
         )}
       </div>
