@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { StudioButton } from "./studio/StudioButton"
+import { StudioInput } from "./studio/StudioInput"
 import type { ChatMessage } from "@/hooks/useRoom"
 
 interface ChatPanelProps {
@@ -20,19 +20,19 @@ export function ChatPanel({ messages, identity, onSend }: ChatPanelProps) {
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col bg-studio-bg">
       <div className="flex-1 space-y-2 overflow-y-auto p-3">
         {messages.map((m, i) => (
           <div key={`${m.at}-${i}`} className="text-sm">
-            <span className="font-medium">
-              {m.from === identity ? "You" : m.from}:{" "}
+            <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-studio-orange">
+              {m.from === identity ? "You" : m.from}
             </span>
-            <span>{m.text}</span>
+            <span className="ml-2 text-white">{m.text}</span>
           </div>
         ))}
       </div>
-      <div className="flex gap-2 border-t p-3">
-        <Input
+      <div className="flex items-center gap-2 border-t border-studio-border p-3">
+        <StudioInput
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => {
@@ -40,7 +40,7 @@ export function ChatPanel({ messages, identity, onSend }: ChatPanelProps) {
           }}
           placeholder="Message"
         />
-        <Button onClick={submit}>Send</Button>
+        <StudioButton onClick={submit}>Send</StudioButton>
       </div>
     </div>
   )
