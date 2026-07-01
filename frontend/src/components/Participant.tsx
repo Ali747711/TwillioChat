@@ -43,8 +43,8 @@ export function Participant({ participant, isDominant }: ParticipantProps) {
 
   return (
     <div
-      className={`relative aspect-video overflow-hidden rounded-lg bg-muted ${
-        isDominant ? "ring-2 ring-green-400" : ""
+      className={`relative aspect-video overflow-hidden rounded-none border bg-studio-bg ${
+        isDominant ? "border-studio-orange ring-2 ring-studio-orange" : "border-studio-border"
       }`}
     >
       <video
@@ -55,16 +55,16 @@ export function Participant({ participant, isDominant }: ParticipantProps) {
       />
       <audio ref={audioRef} autoPlay />
       {!videoEnabled && (
-        <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
+        <div className="absolute inset-0 flex items-center justify-center text-[11px] font-semibold uppercase tracking-[0.15em] text-studio-muted">
           {participant.identity}
         </div>
       )}
-      <span className="absolute bottom-1 left-1 flex items-center gap-1 rounded bg-black/50 px-1.5 py-0.5 text-xs text-white">
-        {!audioEnabled && <MicOff className="h-3 w-3" />}
+      <span className="absolute bottom-1 left-1 flex items-center gap-1 bg-black/60 px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.15em] text-white">
+        {!audioEnabled && <MicOff className="h-3 w-3 text-studio-orange" />}
         {participant.identity}
       </span>
-      <div className="absolute top-1 right-1 flex items-center gap-1 rounded bg-black/50 px-1 py-0.5">
-        {!videoEnabled && <VideoOff className="h-3 w-3 text-white" />}
+      <div className="absolute top-1 right-1 flex items-center gap-1 bg-black/60 px-1 py-0.5">
+        {!videoEnabled && <VideoOff className="h-3 w-3 text-studio-orange" />}
         <NetworkBars level={networkLevel} />
       </div>
     </div>
