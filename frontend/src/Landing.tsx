@@ -1,12 +1,17 @@
 import { GrainOverlay } from './components/studio/GrainOverlay'
+import { StudioHeader } from './components/studio/StudioHeader'
+import { StudioHero } from './components/studio/StudioHero'
+import { MetricBar } from './components/studio/MetricBar'
+import { FeaturesSection } from './components/studio/FeaturesSection'
 
 export default function Landing() {
   return (
     <main className="relative min-h-screen bg-studio-bg text-white">
       <GrainOverlay />
-      <div className="px-6 py-24 text-center text-studio-muted">
-        TwilioMeet® — landing under construction
-      </div>
+      <StudioHeader />
+      <StudioHero />
+      <MetricBar />
+      <FeaturesSection />
     </main>
   )
 }
