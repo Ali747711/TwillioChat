@@ -9,7 +9,7 @@ import {
   VideoOff,
 } from "lucide-react"
 import type { Room } from "twilio-video"
-import { Button } from "@/components/ui/button"
+import { StudioIconButton } from "./studio/StudioIconButton"
 import { setAudioEnabled, setVideoEnabled } from "@/lib/localMedia"
 
 interface ControlBarProps {
@@ -45,38 +45,38 @@ export function ControlBar({
   }
 
   return (
-    <div className="flex items-center justify-center gap-2 border-t bg-background p-3">
-      <Button
-        variant={micOn ? "secondary" : "destructive"}
-        size="icon"
+    <div className="flex items-center justify-center gap-2 border-t border-studio-border bg-studio-bg p-3">
+      <StudioIconButton
+        aria-label="Toggle microphone"
+        variant={micOn ? "default" : "danger"}
         onClick={toggleMic}
       >
-        {micOn ? <Mic /> : <MicOff />}
-      </Button>
-      <Button
-        variant={camOn ? "secondary" : "destructive"}
-        size="icon"
+        {micOn ? <Mic className="h-4 w-4" /> : <MicOff className="h-4 w-4" />}
+      </StudioIconButton>
+      <StudioIconButton
+        aria-label="Toggle camera"
+        variant={camOn ? "default" : "danger"}
         onClick={toggleCam}
       >
-        {camOn ? <VideoIcon /> : <VideoOff />}
-      </Button>
-      <Button
-        variant={sharing ? "default" : "secondary"}
-        size="icon"
+        {camOn ? <VideoIcon className="h-4 w-4" /> : <VideoOff className="h-4 w-4" />}
+      </StudioIconButton>
+      <StudioIconButton
+        aria-label="Share screen"
+        active={sharing}
         onClick={onToggleShare}
       >
-        <MonitorUp />
-      </Button>
-      <Button
-        variant={chatOpen ? "default" : "secondary"}
-        size="icon"
+        <MonitorUp className="h-4 w-4" />
+      </StudioIconButton>
+      <StudioIconButton
+        aria-label="Toggle chat"
+        active={chatOpen}
         onClick={onToggleChat}
       >
-        <MessageSquare />
-      </Button>
-      <Button variant="destructive" size="icon" onClick={onLeave}>
-        <PhoneOff />
-      </Button>
+        <MessageSquare className="h-4 w-4" />
+      </StudioIconButton>
+      <StudioIconButton aria-label="Leave call" variant="danger" onClick={onLeave}>
+        <PhoneOff className="h-4 w-4" />
+      </StudioIconButton>
     </div>
   )
 }
