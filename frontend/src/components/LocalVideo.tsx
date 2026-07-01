@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react'
-import type { Room } from 'twilio-video'
-import { useNetworkLevel } from '@/hooks/useNetworkLevel'
-import { NetworkBars } from './NetworkBars'
+import { useEffect, useRef } from "react"
+import type { Room } from "twilio-video"
+import { useNetworkLevel } from "@/hooks/useNetworkLevel"
+import { NetworkBars } from "./NetworkBars"
 
 interface LocalVideoProps {
   room: Room
@@ -19,7 +19,7 @@ export function LocalVideo({ room, identity }: LocalVideoProps) {
     room.localParticipant.videoTracks.forEach((pub) => {
       if (pub.track) {
         const el = pub.track.attach()
-        el.className = 'h-full w-full object-cover'
+        el.className = "h-full w-full object-cover"
         container.appendChild(el)
         elements.push(el)
       }
@@ -30,12 +30,12 @@ export function LocalVideo({ room, identity }: LocalVideoProps) {
   }, [room])
 
   return (
-    <div className="relative aspect-video overflow-hidden rounded-lg bg-muted">
+    <div className="relative aspect-video overflow-hidden rounded-none border border-studio-border bg-studio-bg">
       <div ref={containerRef} className="h-full w-full" />
-      <span className="absolute bottom-1 left-1 rounded bg-black/50 px-1.5 py-0.5 text-xs text-white">
+      <span className="absolute bottom-1 left-1 bg-black/60 px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.15em] text-white">
         {identity} (you)
       </span>
-      <div className="absolute top-1 right-1 rounded bg-black/50 px-1 py-0.5">
+      <div className="absolute top-1 right-1 bg-black/60 px-1 py-0.5">
         <NetworkBars level={networkLevel} />
       </div>
     </div>
