@@ -18,34 +18,35 @@ export default function Landing() {
 
       {/* Hero — orange field, cream type */}
       <section className="relative overflow-hidden bg-pop-orange px-6 pt-40 pb-24 text-pop-cream">
+        {/* Balanced 4-corner frame: big shapes on opposite corners */}
         <ShapeAccent
           kind="circle"
           tone="yellow"
-          size={90}
-          className="top-24 left-[6%] hidden md:block"
+          size={88}
+          className="top-28 left-[7%] hidden md:block"
         />
         <ShapeAccent
           kind="triangle"
           tone="cream"
-          size={70}
+          size={72}
           rotate={-8}
-          delay={1.2}
-          className="top-36 right-[10%] hidden md:block"
-        />
-        <ShapeAccent
-          kind="blob"
-          tone="blue"
-          size={110}
-          delay={0.6}
-          className="bottom-10 left-[14%] hidden lg:block"
+          delay={0.9}
+          className="top-28 right-[8%] hidden md:block"
         />
         <ShapeAccent
           kind="square"
           tone="cream"
-          size={54}
+          size={56}
           rotate={12}
-          delay={1.8}
-          className="right-[16%] bottom-16 hidden lg:block"
+          delay={1.5}
+          className="bottom-16 left-[9%] hidden lg:block"
+        />
+        <ShapeAccent
+          kind="blob"
+          tone="blue"
+          size={100}
+          delay={0.6}
+          className="right-[8%] bottom-14 hidden lg:block"
         />
 
         <motion.div
