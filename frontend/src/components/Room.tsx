@@ -7,7 +7,7 @@ import type {
 } from "twilio-video"
 import type { ChatMessage, ConnectionState } from "@/hooks/useRoom"
 import { candidateLinkPath, parseIdentity, type Role } from "@/lib/interview"
-import { StudioButton } from "./studio/StudioButton"
+import { PopButton } from "./pop/PopButton"
 import { ChatPanel } from "./ChatPanel"
 import { ControlBar } from "./ControlBar"
 import { NotesPanel } from "./NotesPanel"
@@ -59,9 +59,7 @@ export function Room({
           !admittedSids.has(p.sid)
       )
     : []
-  const visibleParticipants = participants.filter(
-    (p) => !waiting.includes(p)
-  )
+  const visibleParticipants = participants.filter((p) => !waiting.includes(p))
 
   const copyCandidateLink = async () => {
     const link = `${location.origin}${location.pathname}${candidateLinkPath(room.name)}`
@@ -75,49 +73,55 @@ export function Room({
   }
 
   return (
-    <div className="flex h-svh flex-col bg-studio-bg text-white">
+    <div className="flex h-svh flex-col bg-pop-brown font-sans text-pop-cream">
       {connectionState === "reconnecting" && (
-        <div className="bg-studio-orange py-1 text-center text-[11px] font-semibold uppercase tracking-[0.15em] text-black">
+        <div className="bg-pop-yellow py-1.5 text-center font-pop text-xs font-bold tracking-[0.1em] text-pop-brown uppercase">
           Reconnecting…
         </div>
       )}
-      <header className="flex items-center justify-between border-b border-studio-border px-4 py-3">
+      <header className="flex items-center justify-between border-b-[3px] border-pop-cream/10 px-5 py-3">
         <div className="flex items-baseline gap-3">
-          <span className="text-sm font-bold uppercase tracking-[-0.02em]">
+          <span className="font-pop text-lg font-bold text-pop-cream">
             {room.name}
           </span>
-          <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-studio-muted">
+          <span className="rounded-full border border-pop-cream/20 bg-pop-cream/10 px-3 py-1 text-[11px] font-bold tracking-[0.1em] text-pop-cream/70 uppercase">
             {visibleParticipants.length + 1} in interview
           </span>
         </div>
         {isInterviewer && (
-          <StudioButton className="px-3 py-2" onClick={copyCandidateLink}>
-            <span className="flex items-center gap-1">
-              <LinkIcon className="h-3 w-3" />
+          <PopButton
+            variant="cream"
+            size="md"
+            className="px-4 py-2 text-xs"
+            onClick={copyCandidateLink}
+          >
+            <span className="flex items-center gap-1.5 normal-case">
+              <LinkIcon className="h-3.5 w-3.5" />
               {copied ? "Copied!" : "Copy candidate link"}
             </span>
-          </StudioButton>
+          </PopButton>
         )}
       </header>
       {waiting.map((candidate) => (
         <div
           key={candidate.sid}
-          className="flex items-center justify-between border-b border-studio-border bg-studio-bg px-4 py-2"
+          className="flex items-center justify-between border-b-[3px] border-pop-brown bg-pop-cream px-5 py-2.5 text-pop-brown"
         >
-          <span className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-studio-muted">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-studio-orange" />
+          <span className="flex items-center gap-3 text-xs font-bold tracking-[0.08em] uppercase">
+            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-pop-orange" />
             {parseIdentity(candidate.identity).name} is in the waiting room
           </span>
-          <StudioButton
-            className="px-3 py-2"
+          <PopButton
+            size="md"
+            className="px-4 py-2 text-xs"
             onClick={() => onAdmit(candidate.sid)}
           >
             Admit
-          </StudioButton>
+          </PopButton>
         </div>
       ))}
       <div className="flex flex-1 overflow-hidden">
-        <div className="flex-1 overflow-auto p-4">
+        <div className="flex-1 overflow-auto p-5">
           <ParticipantGrid
             room={room}
             identity={identity}
@@ -127,12 +131,16 @@ export function Room({
           />
         </div>
         {chatOpen && (
-          <aside className="w-80 border-l border-studio-border">
-            <ChatPanel messages={messages} identity={identity} onSend={onSend} />
+          <aside className="w-80 border-l-[3px] border-pop-brown bg-pop-cream">
+            <ChatPanel
+              messages={messages}
+              identity={identity}
+              onSend={onSend}
+            />
           </aside>
         )}
         {notesOpen && (
-          <aside className="w-80 border-l border-studio-border">
+          <aside className="w-80 border-l-[3px] border-pop-brown bg-pop-cream">
             <NotesPanel roomName={room.name} />
           </aside>
         )}

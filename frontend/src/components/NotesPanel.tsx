@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { StudioButton } from "./studio/StudioButton"
+import { PopButton } from "./pop/PopButton"
 
 interface NotesPanelProps {
   roomName: string
@@ -38,10 +38,10 @@ export function NotesPanel({ roomName }: NotesPanelProps) {
   }
 
   const tag =
-    "text-[11px] font-semibold uppercase tracking-[0.15em] text-studio-muted"
+    "font-pop text-xs font-bold uppercase tracking-wide text-pop-brown/60"
 
   return (
-    <div className="flex h-full flex-col bg-studio-bg p-3">
+    <div className="flex h-full flex-col bg-pop-cream p-4 text-pop-brown">
       <div className="mb-3 flex items-center justify-between">
         <span className={tag}>Private notes</span>
         <span className={tag}>Not shared</span>
@@ -49,10 +49,10 @@ export function NotesPanel({ roomName }: NotesPanelProps) {
       <textarea
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
-        placeholder="STRENGTHS, CONCERNS, FOLLOW-UPS…"
-        className="min-h-0 flex-1 resize-none rounded-none border border-studio-border bg-transparent p-3 text-sm text-white placeholder:text-studio-muted focus:border-studio-orange focus:outline-none"
+        placeholder="Strengths, concerns, follow-ups…"
+        className="min-h-0 flex-1 resize-none rounded-2xl border-[3px] border-pop-brown bg-white/40 p-3 text-sm text-pop-brown placeholder:text-pop-brown/40 focus:ring-4 focus:ring-pop-yellow focus:outline-none"
       />
-      <div className="mt-3 flex items-center gap-1">
+      <div className="mt-3 flex items-center gap-1.5">
         <span className={`mr-2 ${tag}`}>Rating</span>
         {RATINGS.map((value) => (
           <button
@@ -60,23 +60,31 @@ export function NotesPanel({ roomName }: NotesPanelProps) {
             type="button"
             aria-label={`Rate ${value} of 5`}
             onClick={() => setRating(value)}
-            className={`h-8 w-8 rounded-none border text-xs font-bold transition-colors duration-200 ${
+            className={`flex h-8 w-8 items-center justify-center rounded-full border-[3px] text-xs font-bold transition-colors duration-150 ${
               rating !== null && value <= rating
-                ? "border-studio-orange bg-studio-orange text-black"
-                : "border-studio-border text-studio-muted hover:border-white hover:text-white"
+                ? "border-pop-brown bg-pop-orange text-pop-cream"
+                : "border-pop-brown/30 text-pop-brown/50 hover:border-pop-brown hover:text-pop-brown"
             }`}
           >
             {value}
           </button>
         ))}
       </div>
-      <div className="mt-3 flex gap-2">
-        <StudioButton className="flex-1 px-3 py-2" onClick={copy}>
+      <div className="mt-4 flex gap-2">
+        <PopButton
+          size="md"
+          className="flex-1 px-3 py-2 text-xs"
+          onClick={copy}
+        >
           {copied ? "Copied!" : "Copy"}
-        </StudioButton>
-        <StudioButton className="flex-1 px-3 py-2" onClick={download}>
+        </PopButton>
+        <PopButton
+          size="md"
+          className="flex-1 px-3 py-2 text-xs"
+          onClick={download}
+        >
           Download .txt
-        </StudioButton>
+        </PopButton>
       </div>
     </div>
   )
