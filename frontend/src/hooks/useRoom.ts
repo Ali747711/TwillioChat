@@ -1,6 +1,8 @@
 import { useCallback, useReducer, useRef, useState } from "react"
 import {
   connect,
+  createLocalAudioTrack,
+  createLocalVideoTrack,
   LocalDataTrack,
   type LocalVideoTrack,
   type RemoteParticipant,
@@ -8,6 +10,11 @@ import {
   type Room,
 } from "twilio-video"
 import { fetchToken } from "@/lib/twilioClient"
+import {
+  makeAdmitMessage,
+  parseControlMessage,
+  type Role,
+} from "@/lib/interview"
 import { startScreenShare, stopScreenShare } from "@/lib/localMedia"
 import { participantsReducer } from "./participants"
 
@@ -37,6 +44,18 @@ export function useRoom() {
   const [connectionState, setConnectionState] =
     useState<ConnectionState>("connected")
 
+  // Interview mode: candidates connect without publishing and wait for the
+  // interviewer's admit signal. `previewTrack` is the candidate's local,
+  // unpublished camera; `admitted` flips when the admit message arrives.
+  const [admitted, setAdmitted] = useState(true)
+  const [admittedSids, setAdmittedSids] = useState<ReadonlySet<string>>(
+    () => new Set()
+  )
+  const [previewTrack, setPreviewTrack] = useState<LocalVideoTrack | null>(null)
+  const previewTrackRef = useRef<LocalVideoTrack | null>(null)
+  const admitSelfRef = useRef<() => void>(() => {})
+  const selfSidRef = useRef<string | null>(null)
+
   const addMessage = useCallback((from: string, text: string) => {
     setMessages((prev) => [...prev, { from, text, at: Date.now() }])
   }, [])
@@ -47,7 +66,15 @@ export function useRoom() {
       const listenForData = (track: RemoteTrack) => {
         if (track.kind !== "data") return
         track.on("message", (data) => {
-          if (typeof data === "string") addMessage(participant.identity, data)
+          if (typeof data !== "string") return
+          const control = parseControlMessage(data)
+          if (control) {
+            if (control.targetSid === selfSidRef.current) {
+              admitSelfRef.current()
+            }
+            return
+          }
+          addMessage(participant.identity, data)
         })
       }
       participant.tracks.forEach((pub) => {
@@ -62,15 +89,24 @@ export function useRoom() {
   )
 
   const join = useCallback(
-    async (identity: string, roomName: string, withVideo: boolean) => {
+    async (
+      identity: string,
+      roomName: string,
+      withVideo: boolean,
+      role: Role
+    ) => {
       setStatus("connecting")
       setError(null)
       try {
         const token = await fetchToken({ identity, room: roomName })
+        const isCandidate = role === "candidate"
+
+        // Candidates join the real room but publish nothing until admitted,
+        // so the interviewer sees them arrive without seeing or hearing them.
         const connected = await connect(token, {
           name: roomName,
-          audio: true,
-          video: withVideo ? { width: 640 } : false,
+          audio: !isCandidate,
+          video: !isCandidate && withVideo ? { width: 640 } : false,
           networkQuality: { local: 1, remote: 1 },
           dominantSpeaker: true,
         })
@@ -78,6 +114,39 @@ export function useRoom() {
         const dataTrack = new LocalDataTrack()
         dataTrackRef.current = dataTrack
         await connected.localParticipant.publishTrack(dataTrack)
+
+        selfSidRef.current = connected.localParticipant.sid
+        setAdmitted(!isCandidate)
+        setAdmittedSids(new Set())
+
+        if (isCandidate && withVideo) {
+          try {
+            const preview = await createLocalVideoTrack({ width: 640 })
+            previewTrackRef.current = preview
+            setPreviewTrack(preview)
+          } catch {
+            // Camera unavailable or denied — wait (and later join) audio-only.
+          }
+        }
+
+        // Runs on the candidate when the interviewer's admit message arrives:
+        // publish the previewed camera plus a fresh mic track. Idempotent —
+        // repeated admits are ignored.
+        let published = false
+        admitSelfRef.current = () => {
+          if (!isCandidate || published) return
+          published = true
+          const preview = previewTrackRef.current
+          if (preview) {
+            void connected.localParticipant.publishTrack(preview)
+          }
+          void createLocalAudioTrack()
+            .then((audio) => connected.localParticipant.publishTrack(audio))
+            .catch(() => {
+              // Mic unavailable — join silently rather than failing the admit.
+            })
+          setAdmitted(true)
+        }
 
         teardownsRef.current = []
 
@@ -99,6 +168,15 @@ export function useRoom() {
             setScreenTrack(null)
             track.stop()
           }
+          if (previewTrackRef.current) {
+            previewTrackRef.current.stop()
+            previewTrackRef.current = null
+            setPreviewTrack(null)
+          }
+          selfSidRef.current = null
+          admitSelfRef.current = () => {}
+          setAdmitted(true)
+          setAdmittedSids(new Set())
           connected.removeListener("participantConnected", watchParticipant)
           connected.removeListener(
             "participantDisconnected",
@@ -142,6 +220,17 @@ export function useRoom() {
   const leave = useCallback(() => {
     room?.disconnect()
   }, [room])
+
+  // Interviewer action: broadcast the admit signal and reveal the candidate's
+  // tile locally right away (their tracks arrive via trackSubscribed).
+  const admitCandidate = useCallback((sid: string) => {
+    dataTrackRef.current?.send(makeAdmitMessage(sid))
+    setAdmittedSids((prev) => {
+      const next = new Set(prev)
+      next.add(sid)
+      return next
+    })
+  }, [])
 
   const toggleScreenShare = useCallback(async () => {
     if (!room) return
@@ -196,5 +285,9 @@ export function useRoom() {
     toggleScreenShare,
     dominantSpeakerSid,
     connectionState,
+    admitted,
+    admittedSids,
+    admitCandidate,
+    previewTrack,
   }
 }
