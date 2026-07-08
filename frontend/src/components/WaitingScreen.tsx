@@ -1,7 +1,9 @@
 import { useEffect, useRef } from "react"
+import { motion } from "motion/react"
 import type { LocalVideoTrack } from "twilio-video"
-import { GrainOverlay } from "./studio/GrainOverlay"
-import { StudioButton } from "./studio/StudioButton"
+import { PopButton } from "./pop/PopButton"
+import { ShapeAccent } from "./pop/ShapeAccent"
+import { popContainer, popItem } from "./pop/motion"
 
 interface WaitingScreenProps {
   identityName: string
@@ -32,32 +34,46 @@ export function WaitingScreen({
   }, [previewTrack])
 
   return (
-    <main className="relative flex min-h-svh flex-col items-center justify-center gap-6 bg-studio-bg p-6 text-white">
-      <GrainOverlay />
-      <div className="relative z-10 w-full max-w-md">
-        <div className="relative aspect-video overflow-hidden rounded-none border border-studio-border bg-studio-bg">
+    <main className="relative flex min-h-svh flex-col items-center justify-center gap-6 overflow-hidden bg-pop-orange p-6 font-sans text-pop-brown">
+      <ShapeAccent kind="blob" tone="cream" size={110} className="left-[6%] top-[10%] hidden sm:block" />
+      <ShapeAccent kind="circle" tone="yellow" size={70} delay={0.8} className="bottom-[12%] right-[8%] hidden sm:block" />
+
+      <motion.div
+        variants={popContainer}
+        initial="hidden"
+        animate="show"
+        className="relative z-10 w-full max-w-md"
+      >
+        <motion.div
+          variants={popItem}
+          className="relative aspect-video overflow-hidden rounded-3xl border-[3px] border-pop-brown bg-pop-brown shadow-[8px_8px_0_0_var(--color-pop-brown)]"
+        >
           <div ref={containerRef} className="h-full w-full" />
           {!previewTrack && (
-            <div className="absolute inset-0 flex items-center justify-center text-[11px] font-semibold uppercase tracking-[0.15em] text-studio-muted">
+            <div className="absolute inset-0 flex items-center justify-center text-sm font-bold uppercase tracking-[0.15em] text-pop-cream/70">
               {identityName} (audio-only)
             </div>
           )}
-          <span className="absolute bottom-1 left-1 bg-black/60 px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.15em] text-white">
+          <span className="absolute bottom-3 left-3 rounded-full border-2 border-pop-cream/40 bg-pop-brown/80 px-3 py-1 text-xs font-bold uppercase tracking-[0.1em] text-pop-cream">
             {identityName} (you)
           </span>
-        </div>
-        <div className="mt-6 flex items-center justify-between border border-studio-border p-4">
+        </motion.div>
+
+        <motion.div
+          variants={popItem}
+          className="mt-6 flex items-center justify-between gap-4 rounded-full border-[3px] border-pop-brown bg-pop-cream px-5 py-3 shadow-[6px_6px_0_0_var(--color-pop-brown)]"
+        >
           <div className="flex items-center gap-3">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-studio-orange" />
-            <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-studio-muted">
+            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-pop-orange" />
+            <span className="text-xs font-bold uppercase tracking-[0.12em] text-pop-brown/80">
               Waiting for the interviewer to admit you…
             </span>
           </div>
-          <StudioButton className="px-3 py-2" onClick={onLeave}>
+          <PopButton size="md" className="px-4 py-2 text-xs" onClick={onLeave}>
             Leave
-          </StudioButton>
-        </div>
-      </div>
+          </PopButton>
+        </motion.div>
+      </motion.div>
     </main>
   )
 }
