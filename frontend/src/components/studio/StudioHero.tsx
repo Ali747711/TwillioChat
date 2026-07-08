@@ -25,7 +25,7 @@ function SignatureStroke() {
       aria-hidden
       viewBox="0 0 420 60"
       xmlns="http://www.w3.org/2000/svg"
-      className="absolute left-1/2 top-1/2 w-[70%] max-w-[480px] -translate-x-1/2 -translate-y-[30%] rotate-[-2deg] opacity-80 pointer-events-none"
+      className="pointer-events-none absolute bottom-[-6px] left-0 w-[65%] max-w-[440px] rotate-[-2deg] opacity-80"
       style={{ zIndex: 2 }}
     >
       <path
@@ -40,26 +40,30 @@ function SignatureStroke() {
   )
 }
 
-// Service tags separated by orange slashes
-const SERVICE_TAGS = ['VIDEO', 'SCREEN SHARE', 'CHAT'] as const
+// Capability tags separated by orange slashes
+const SERVICE_TAGS = [
+  'WAITING ROOM',
+  'SCREEN SHARE',
+  'LIVE CHAT',
+  'PRIVATE NOTES',
+] as const
 
 export function StudioHero() {
   return (
     <section className="px-6 pb-0 pt-28 md:pt-32">
-      {/* Framed container */}
-      <div className="relative mx-auto w-full max-w-6xl border border-studio-border bg-studio-bg/80 p-8 backdrop-blur-sm md:p-12">
-        {/* Corner markers */}
+      {/* Framed container — a single left-aligned editorial column, so the
+          eye travels meta → wordmark → pitch → CTA without dead air. */}
+      <div className="relative mx-auto w-full max-w-6xl border border-studio-border bg-studio-bg/80 p-8 backdrop-blur-sm md:p-10">
         <Corner position="tl" />
         <Corner position="tr" />
         <Corner position="bl" />
         <Corner position="br" />
 
-        {/* Top row meta */}
-        <div className="mb-8 flex items-center justify-between">
+        {/* Meta row */}
+        <div className="mb-6 flex items-center justify-between">
           <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-studio-muted">
-            (EST. 2026)
+            (EST. 2026) — INTERVIEW SCREENING
           </span>
-          {/* Status glyph — outlined circle with inner orange dot */}
           <span aria-label="System live" className="flex items-center gap-2">
             <span className="flex h-3 w-3 items-center justify-center rounded-full border border-studio-border">
               <span className="h-1.5 w-1.5 rounded-full bg-studio-orange" />
@@ -70,42 +74,54 @@ export function StudioHero() {
           </span>
         </div>
 
-        {/* Display wordmark + signature overlay */}
-        <div className="relative mb-8 text-center">
+        {/* Display wordmark, left-anchored, signature slicing beneath it */}
+        <div className="relative mb-6">
           <h1
             className="relative z-10 font-extrabold uppercase leading-none tracking-[-0.04em] text-white"
-            style={{ fontSize: 'clamp(48px, 8vw, 110px)' }}
+            style={{ fontSize: 'clamp(44px, 7vw, 96px)' }}
           >
             TWILIOMEET®
           </h1>
-          {/* Original squiggle signature — hand-authored path */}
           <SignatureStroke />
         </div>
 
-        {/* Product copy + CTA row */}
-        <div className="flex flex-col items-center gap-6 text-center md:flex-row md:items-end md:justify-between md:text-left">
-          <p className="max-w-md text-base leading-relaxed text-studio-muted">
-            Instant video rooms. Share your screen without setup. Built-in chat
-            that keeps the thread after the call ends.
-          </p>
+        {/* Sub-headline anchors the niche */}
+        <p
+          className="mb-4 max-w-2xl font-bold uppercase leading-tight tracking-[-0.02em] text-white"
+          style={{ fontSize: 'clamp(20px, 2.6vw, 32px)' }}
+        >
+          Video interviews with a real waiting room.
+        </p>
+
+        {/* Pitch + CTA kept together in one reading column */}
+        <p className="mb-6 max-w-xl text-base leading-relaxed text-studio-muted">
+          Send candidates a link. They hold in a lobby until you admit them —
+          then it&apos;s screen share for live coding, chat for links, and a
+          private notes panel for your decision. Nothing to install.
+        </p>
+        <div className="mb-8 flex flex-wrap items-center gap-4">
           <StudioButton
-            onClick={() => { window.location.href = '/app' }}
-            className="shrink-0"
+            onClick={() => {
+              window.location.href = '/app'
+            }}
           >
-            Launch App
+            Start an Interview
           </StudioButton>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-studio-muted">
+            No account · No download · Free demo
+          </span>
         </div>
 
-        {/* Service loop footer */}
-        <div className="mt-10 flex items-center gap-3 border-t border-studio-border pt-6">
+        {/* Capability loop — full-width rule, tags given real weight */}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-studio-border pt-5">
           {SERVICE_TAGS.map((tag, i) => (
-            <span key={tag} className="flex items-center gap-3">
+            <span key={tag} className="flex items-center gap-4">
               {i > 0 && (
-                <span className="text-studio-orange" aria-hidden>
+                <span className="text-lg font-bold text-studio-orange" aria-hidden>
                   /
                 </span>
               )}
-              <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-studio-muted">
+              <span className="text-sm font-bold uppercase tracking-[0.1em] text-white md:text-base">
                 {tag}
               </span>
             </span>

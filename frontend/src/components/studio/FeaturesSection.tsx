@@ -6,22 +6,22 @@ interface FeatureRow {
 
 const FEATURES: FeatureRow[] = [
   {
-    index: '01',
-    title: 'VIDEO ROOMS',
+    index: "01",
+    title: "WAITING ROOM",
     description:
-      'Spin up a private room in seconds. No download, no account — share a link and everyone joins.',
+      "Candidates open your link and hold in a lobby — previewing their camera — until you admit them.",
   },
   {
-    index: '02',
-    title: 'SCREEN SHARE',
+    index: "02",
+    title: "LIVE CODING & PORTFOLIO",
     description:
-      'Show your whole desktop or a single tab. Participants see it immediately, no setup required.',
+      "One-click screen share for pairing sessions, portfolio walkthroughs, or whiteboard sketches.",
   },
   {
-    index: '03',
-    title: 'LIVE CHAT',
+    index: "03",
+    title: "PRIVATE NOTES & RATING",
     description:
-      'Send messages alongside the call. The thread persists so nothing gets lost once the video ends.',
+      "Score the candidate and take notes during the call. Nothing is stored or shared — copy or download when you leave.",
   },
 ]
 
@@ -31,8 +31,8 @@ export function FeaturesSection() {
       {/* Section header */}
       <div className="px-6">
         <h2
-          className="mb-16 font-bold uppercase tracking-[-0.02em] text-white"
-          style={{ fontSize: 'clamp(28px, 4vw, 48px)' }}
+          className="mb-16 font-bold tracking-[-0.02em] text-white uppercase"
+          style={{ fontSize: "clamp(28px, 4vw, 48px)" }}
         >
           How It Works
         </h2>
@@ -50,7 +50,7 @@ export function FeaturesSection() {
               </span>
 
               {/* Title — expands to fill available width on desktop */}
-              <span className="flex-1 text-sm font-bold uppercase tracking-[-0.02em] text-white md:text-base">
+              <span className="flex-1 text-sm font-bold tracking-[-0.02em] text-white uppercase md:text-base">
                 {title}
               </span>
 
