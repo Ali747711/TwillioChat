@@ -8,6 +8,7 @@ node_modules/.tmp/
 
 # local preview config
 .claude/launch.json
+**/.claude/launch.json
 
 # brainstorming visual-companion mockups
 .superpowers/
