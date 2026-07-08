@@ -20,9 +20,9 @@ export function LocalScreen({ track }: LocalScreenProps) {
   }, [track])
 
   return (
-    <div className="relative aspect-video overflow-hidden rounded-none border border-studio-border bg-studio-bg">
+    <div className="relative aspect-video overflow-hidden rounded-2xl border-[3px] border-pop-cream/15 bg-pop-brown/60">
       <div ref={containerRef} className="h-full w-full" />
-      <span className="absolute bottom-1 left-1 bg-black/60 px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.15em] text-white">
+      <span className="absolute bottom-2 left-2 rounded-full border border-pop-cream/15 bg-pop-brown/85 px-2.5 py-1 font-pop text-xs font-semibold text-pop-cream">
         You (screen)
       </span>
     </div>

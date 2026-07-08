@@ -13,7 +13,7 @@ export function NetworkBars({ level }: NetworkBarsProps) {
       {[1, 2, 3, 4, 5].map((bar) => (
         <span
           key={bar}
-          className={`w-0.5 rounded-none ${bar <= active ? "bg-studio-orange" : "bg-white/25"}`}
+          className={`w-1 rounded-full ${bar <= active ? "bg-pop-yellow" : "bg-pop-cream/25"}`}
           style={{ height: `${bar * 2 + 2}px` }}
         />
       ))}

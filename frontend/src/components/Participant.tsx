@@ -45,8 +45,10 @@ export function Participant({ participant, isDominant }: ParticipantProps) {
 
   return (
     <div
-      className={`relative aspect-video overflow-hidden rounded-none border bg-studio-bg ${
-        isDominant ? "border-studio-orange ring-2 ring-studio-orange" : "border-studio-border"
+      className={`relative aspect-video overflow-hidden rounded-2xl border-[3px] bg-pop-brown/60 transition-colors duration-200 ${
+        isDominant
+          ? "border-pop-yellow shadow-[0_0_0_4px_var(--color-pop-yellow)]"
+          : "border-pop-cream/15"
       }`}
     >
       <video
@@ -57,16 +59,16 @@ export function Participant({ participant, isDominant }: ParticipantProps) {
       />
       <audio ref={audioRef} autoPlay />
       {!videoEnabled && (
-        <div className="absolute inset-0 flex items-center justify-center text-[11px] font-semibold uppercase tracking-[0.15em] text-studio-muted">
+        <div className="absolute inset-0 flex items-center justify-center font-pop text-sm font-semibold text-pop-cream/60">
           {displayName}
         </div>
       )}
-      <span className="absolute bottom-1 left-1 flex items-center gap-1 bg-black/60 px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.15em] text-white">
-        {!audioEnabled && <MicOff className="h-3 w-3 text-studio-orange" />}
+      <span className="absolute bottom-2 left-2 flex items-center gap-1.5 rounded-full border border-pop-cream/15 bg-pop-brown/85 px-2.5 py-1 font-pop text-xs font-semibold text-pop-cream">
+        {!audioEnabled && <MicOff className="h-3 w-3 text-pop-orange" />}
         {displayName}
       </span>
-      <div className="absolute top-1 right-1 flex items-center gap-1 bg-black/60 px-1 py-0.5">
-        {!videoEnabled && <VideoOff className="h-3 w-3 text-studio-orange" />}
+      <div className="absolute top-2 right-2 flex items-center gap-1.5 rounded-full border border-pop-cream/15 bg-pop-brown/85 px-2 py-1">
+        {!videoEnabled && <VideoOff className="h-3 w-3 text-pop-orange" />}
         <NetworkBars level={networkLevel} />
       </div>
     </div>
