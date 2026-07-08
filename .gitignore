@@ -12,3 +12,6 @@ node_modules/.tmp/
 
 # brainstorming visual-companion mockups
 .superpowers/
+
+# reference screenshots (local only)
+Screenshot*.png
