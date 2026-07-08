@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react"
 import { MicOff, VideoOff } from "lucide-react"
 import type { RemoteParticipant, RemoteTrack } from "twilio-video"
 import { useNetworkLevel } from "@/hooks/useNetworkLevel"
+import { parseIdentity } from "@/lib/interview"
 import { useRemoteMediaState } from "@/hooks/useRemoteMediaState"
 import { NetworkBars } from "./NetworkBars"
 
@@ -14,6 +15,7 @@ export function Participant({ participant, isDominant }: ParticipantProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const audioRef = useRef<HTMLAudioElement>(null)
   const networkLevel = useNetworkLevel(participant)
+  const displayName = parseIdentity(participant.identity).name
   const { audioEnabled, videoEnabled } = useRemoteMediaState(participant)
 
   useEffect(() => {
@@ -56,12 +58,12 @@ export function Participant({ participant, isDominant }: ParticipantProps) {
       <audio ref={audioRef} autoPlay />
       {!videoEnabled && (
         <div className="absolute inset-0 flex items-center justify-center text-[11px] font-semibold uppercase tracking-[0.15em] text-studio-muted">
-          {participant.identity}
+          {displayName}
         </div>
       )}
       <span className="absolute bottom-1 left-1 flex items-center gap-1 bg-black/60 px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.15em] text-white">
         {!audioEnabled && <MicOff className="h-3 w-3 text-studio-orange" />}
-        {participant.identity}
+        {displayName}
       </span>
       <div className="absolute top-1 right-1 flex items-center gap-1 bg-black/60 px-1 py-0.5">
         {!videoEnabled && <VideoOff className="h-3 w-3 text-studio-orange" />}

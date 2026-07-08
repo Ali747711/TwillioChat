@@ -1,5 +1,6 @@
 import { useState } from "react"
 import {
+  ClipboardList,
   MessageSquare,
   Mic,
   MicOff,
@@ -19,6 +20,10 @@ interface ControlBarProps {
   onToggleChat: () => void
   onToggleShare: () => void
   onLeave: () => void
+  // Interview mode: present only for the interviewer, who gets a private
+  // notes panel toggle alongside the shared controls.
+  notesOpen?: boolean
+  onToggleNotes?: () => void
 }
 
 export function ControlBar({
@@ -28,6 +33,8 @@ export function ControlBar({
   onToggleChat,
   onToggleShare,
   onLeave,
+  notesOpen = false,
+  onToggleNotes,
 }: ControlBarProps) {
   const [micOn, setMicOn] = useState(true)
   const [camOn, setCamOn] = useState(true)
@@ -58,7 +65,11 @@ export function ControlBar({
         variant={camOn ? "default" : "danger"}
         onClick={toggleCam}
       >
-        {camOn ? <VideoIcon className="h-4 w-4" /> : <VideoOff className="h-4 w-4" />}
+        {camOn ? (
+          <VideoIcon className="h-4 w-4" />
+        ) : (
+          <VideoOff className="h-4 w-4" />
+        )}
       </StudioIconButton>
       <StudioIconButton
         aria-label="Share screen"
@@ -74,7 +85,20 @@ export function ControlBar({
       >
         <MessageSquare className="h-4 w-4" />
       </StudioIconButton>
-      <StudioIconButton aria-label="Leave call" variant="danger" onClick={onLeave}>
+      {onToggleNotes && (
+        <StudioIconButton
+          aria-label="Toggle interview notes"
+          active={notesOpen}
+          onClick={onToggleNotes}
+        >
+          <ClipboardList className="h-4 w-4" />
+        </StudioIconButton>
+      )}
+      <StudioIconButton
+        aria-label="Leave call"
+        variant="danger"
+        onClick={onLeave}
+      >
         <PhoneOff className="h-4 w-4" />
       </StudioIconButton>
     </div>

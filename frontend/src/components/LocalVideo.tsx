@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react"
 import type { Room } from "twilio-video"
 import { useNetworkLevel } from "@/hooks/useNetworkLevel"
+import { parseIdentity } from "@/lib/interview"
 import { NetworkBars } from "./NetworkBars"
 
 interface LocalVideoProps {
@@ -33,7 +34,7 @@ export function LocalVideo({ room, identity }: LocalVideoProps) {
     <div className="relative aspect-video overflow-hidden rounded-none border border-studio-border bg-studio-bg">
       <div ref={containerRef} className="h-full w-full" />
       <span className="absolute bottom-1 left-1 bg-black/60 px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.15em] text-white">
-        {identity} (you)
+        {parseIdentity(identity).name} (you)
       </span>
       <div className="absolute top-1 right-1 bg-black/60 px-1 py-0.5">
         <NetworkBars level={networkLevel} />

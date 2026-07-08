@@ -2,6 +2,7 @@ import { useState } from "react"
 import { StudioButton } from "./studio/StudioButton"
 import { StudioInput } from "./studio/StudioInput"
 import type { ChatMessage } from "@/hooks/useRoom"
+import { parseIdentity } from "@/lib/interview"
 
 interface ChatPanelProps {
   messages: ChatMessage[]
@@ -25,7 +26,7 @@ export function ChatPanel({ messages, identity, onSend }: ChatPanelProps) {
         {messages.map((m, i) => (
           <div key={`${m.at}-${i}`} className="text-sm">
             <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-studio-orange">
-              {m.from === identity ? "You" : m.from}
+              {m.from === identity ? "You" : parseIdentity(m.from).name}
             </span>
             <span className="ml-2 text-white">{m.text}</span>
           </div>
