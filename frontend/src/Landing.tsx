@@ -7,7 +7,7 @@ import { CapabilityBento } from "./components/pop/CapabilityBento"
 import { ProcessTimeline } from "./components/pop/ProcessTimeline"
 import { DomeCTA } from "./components/pop/DomeCTA"
 import { PopFooter } from "./components/pop/PopFooter"
-import { StrandsWindow } from "./components/pop/StrandsWindow"
+import Strands from "./components/pop/Strands"
 import { popContainer, popItem } from "./components/pop/motion"
 
 const APP_PATH = "/app"
@@ -17,22 +17,70 @@ export default function Landing() {
     <main className="min-h-screen overflow-x-clip bg-pop-cream font-sans text-pop-brown">
       <PopNav ctaHref={APP_PATH} />
 
-      {/* Hero — split editorial: content left, live Strands window right */}
-      <section className="relative flex min-h-svh items-center overflow-hidden bg-pop-orange px-6 pt-28 pb-16 text-pop-cream md:py-28">
-        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-10 lg:gap-16">
-          {/* Left — content */}
+      {/* Hero — full-viewport orange field, content vertically centered */}
+      <section className="relative flex min-h-svh items-center overflow-hidden bg-pop-orange px-6 pt-32 pb-20 text-pop-cream md:pt-28">
+        {/* Ambient WebGL strands flowing beneath the hero content (pop palette).
+            The band is offset low so the glow never washes out the headline. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-1/3 -bottom-1/3"
+        >
+          <Strands
+            colors={["#FBF0D9", "#FFD35C", "#3A66C4"]}
+            count={3}
+            speed={0.4}
+            amplitude={1.1}
+            waviness={1}
+            thickness={0.6}
+            glow={2.2}
+            taper={3}
+            spread={1}
+            intensity={0.5}
+            saturation={1.2}
+            opacity={0.65}
+            scale={1.15}
+          />
+        </div>
+        {/* Shapes are anchored to this content-width wrapper (not the screen
+            edges), so they frame the text at any viewport width. Bottom padding
+            biases the centered content upward, clearing room for the wave. */}
+        <div className="relative mx-auto w-full max-w-6xl pb-20 md:pb-28">
+          <ShapeAccent
+            kind="circle"
+            tone="yellow"
+            size={88}
+            className="-top-6 left-0 hidden md:block"
+          />
+          <ShapeAccent
+            kind="triangle"
+            tone="cream"
+            size={72}
+            rotate={-8}
+            delay={0.9}
+            className="-top-4 right-2 hidden md:block"
+          />
+          <ShapeAccent
+            kind="square"
+            tone="cream"
+            size={56}
+            rotate={12}
+            delay={1.5}
+            className="-bottom-6 left-6 hidden lg:block"
+          />
+          <ShapeAccent
+            kind="blob"
+            tone="blue"
+            size={100}
+            delay={0.6}
+            className="right-2 -bottom-8 hidden lg:block"
+          />
+
           <motion.div
             variants={popContainer}
             initial="hidden"
             animate="show"
-            className="relative z-10 flex flex-col items-start gap-6 text-left"
+            className="relative z-10 mx-auto flex max-w-4xl flex-col items-center gap-8 text-center"
           >
-            <ShapeAccent
-              kind="circle"
-              tone="yellow"
-              size={60}
-              className="-top-12 -left-4 hidden md:block"
-            />
             <motion.span
               variants={popItem}
               className="rounded-full border-[3px] border-pop-cream/70 px-4 py-1.5 text-xs font-bold tracking-[0.2em] uppercase"
@@ -41,21 +89,21 @@ export default function Landing() {
             </motion.span>
             <motion.h1
               variants={popItem}
-              className="font-pop text-4xl leading-[1.02] font-bold tracking-tight sm:text-6xl lg:text-7xl"
+              className="font-pop text-5xl leading-[1.05] font-bold tracking-tight sm:text-6xl md:text-7xl"
             >
               Video interviews with a real waiting room.
             </motion.h1>
             <motion.p
               variants={popItem}
-              className="max-w-md text-lg text-pop-cream/90"
+              className="max-w-2xl text-lg text-pop-cream/90 sm:text-xl"
             >
               Send a candidate one link. They wait in a calm lobby while you get
-              ready — then you admit them, share screens, watch them code, and
-              jot private notes nobody else sees.
+              ready. Once you admit them, you share screens, watch them code,
+              and jot private notes nobody else sees.
             </motion.p>
             <motion.div
               variants={popItem}
-              className="flex flex-wrap items-center gap-4 pt-2"
+              className="flex flex-wrap items-center justify-center gap-4 pt-2"
             >
               <PopButton
                 variant="cream"
@@ -70,36 +118,11 @@ export default function Landing() {
                 variant="outline"
                 size="lg"
                 className="border-pop-cream text-pop-cream hover:bg-pop-cream/10"
-                onClick={() => {
-                  document
-                    .getElementById("how-it-works")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }}
               >
                 See how it works
               </PopButton>
             </motion.div>
           </motion.div>
-
-          {/* Right — live Strands window */}
-          <div className="relative">
-            <ShapeAccent
-              kind="triangle"
-              tone="cream"
-              size={56}
-              rotate={-8}
-              delay={0.9}
-              className="-top-8 -right-5 hidden lg:block"
-            />
-            <ShapeAccent
-              kind="blob"
-              tone="blue"
-              size={72}
-              delay={0.6}
-              className="-bottom-9 -left-9 hidden lg:block"
-            />
-            <StrandsWindow />
-          </div>
         </div>
       </section>
 
