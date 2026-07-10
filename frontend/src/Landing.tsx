@@ -7,6 +7,7 @@ import { CapabilityBento } from "./components/pop/CapabilityBento"
 import { ProcessTimeline } from "./components/pop/ProcessTimeline"
 import { DomeCTA } from "./components/pop/DomeCTA"
 import { PopFooter } from "./components/pop/PopFooter"
+import Strands from "./components/pop/Strands"
 import { popContainer, popItem } from "./components/pop/motion"
 
 const APP_PATH = "/app"
@@ -18,6 +19,28 @@ export default function Landing() {
 
       {/* Hero — full-viewport orange field, content vertically centered */}
       <section className="relative flex min-h-svh items-center overflow-hidden bg-pop-orange px-6 pt-32 pb-20 text-pop-cream md:pt-28">
+        {/* Ambient WebGL strands flowing beneath the hero content (pop palette).
+            The band is offset low so the glow never washes out the headline. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-1/3 -bottom-1/3"
+        >
+          <Strands
+            colors={["#FBF0D9", "#FFD35C", "#3A66C4"]}
+            count={3}
+            speed={0.4}
+            amplitude={1.2}
+            waviness={1}
+            thickness={0.6}
+            glow={2.2}
+            taper={3}
+            spread={1}
+            intensity={0.5}
+            saturation={1.2}
+            opacity={0.55}
+            scale={1.4}
+          />
+        </div>
         {/* Shapes are anchored to this content-width wrapper (not the screen
             edges), so they frame the text at any viewport width. */}
         <div className="relative mx-auto w-full max-w-6xl">
