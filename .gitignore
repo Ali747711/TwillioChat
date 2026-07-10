@@ -15,3 +15,7 @@ node_modules/.tmp/
 
 # reference screenshots (local only)
 Screenshot*.png
+.claude
+.agents
+docs
+skills-lock.json
