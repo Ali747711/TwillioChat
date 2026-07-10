@@ -29,7 +29,7 @@ export default function Landing() {
             colors={["#FBF0D9", "#FFD35C", "#3A66C4"]}
             count={3}
             speed={0.4}
-            amplitude={1.2}
+            amplitude={1.1}
             waviness={1}
             thickness={0.6}
             glow={2.2}
@@ -37,13 +37,14 @@ export default function Landing() {
             spread={1}
             intensity={0.5}
             saturation={1.2}
-            opacity={0.55}
-            scale={1.4}
+            opacity={0.65}
+            scale={1.15}
           />
         </div>
         {/* Shapes are anchored to this content-width wrapper (not the screen
-            edges), so they frame the text at any viewport width. */}
-        <div className="relative mx-auto w-full max-w-6xl">
+            edges), so they frame the text at any viewport width. Bottom padding
+            biases the centered content upward, clearing room for the wave. */}
+        <div className="relative mx-auto w-full max-w-6xl pb-20 md:pb-28">
           <ShapeAccent
             kind="circle"
             tone="yellow"
